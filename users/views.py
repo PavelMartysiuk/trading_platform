@@ -17,8 +17,10 @@ from django.http import Http404
 from django.shortcuts import get_list_or_404, get_object_or_404
 
 
-class CreateUserGenericViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
-                               mixins.DestroyModelMixin, mixins.UpdateModelMixin,
+class CreateUserGenericViewSet(mixins.RetrieveModelMixin,
+                               mixins.DestroyModelMixin,
+                               mixins.CreateModelMixin,
+                               mixins.UpdateModelMixin,
                                viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -55,9 +57,10 @@ class CreateUserGenericViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveDeleteInventoryGenericViewSet(mixins.DestroyModelMixin, mixins.ListModelMixin,
-                                            mixins.RetrieveModelMixin,
-                                            viewsets.GenericViewSet):
+class RetrieveDeleteInventoryGenericViewSet(mixins.RetrieveModelMixin,
+                                            mixins.DestroyModelMixin,
+                                            viewsets.GenericViewSet,
+                                            mixins.ListModelMixin, ):
     permission_classes = (IsAuthenticated,)
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
@@ -78,8 +81,10 @@ class RetrieveDeleteInventoryGenericViewSet(mixins.DestroyModelMixin, mixins.Lis
         return super().destroy(request, *args, **kwargs)
 
 
-class RetrieveCurrencyGenericViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
-                                     viewsets.GenericViewSet):
+class RetrieveCurrencyGenericViewSet(mixins.RetrieveModelMixin,
+                                     viewsets.GenericViewSet,
+                                     mixins.ListModelMixin,
+                                     ):
     """Class retrieves curensies and one currency by pk"""
     permission_classes = (AllowAny,)
     queryset = Currency.objects.all()
@@ -100,7 +105,8 @@ def validate_sell_offer(offer):
     return True
 
 
-class CreateOfferGenericViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class CreateOfferGenericViewSet(mixins.CreateModelMixin,
+                                viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = OfferSerializer
     queryset = Offer.objects.all()
@@ -122,7 +128,9 @@ class CreateOfferGenericViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet
             return super().create(request)
 
 
-class RetrieveTradeGenericViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class RetrieveTradeGenericViewSet(mixins.RetrieveModelMixin,
+                                  viewsets.GenericViewSet,
+                                  mixins.ListModelMixin, ):
     """Class retrieves all trade history and one trade by pk"""
     queryset = Trade.objects.all()
     serializer_class = TradeSerializer
