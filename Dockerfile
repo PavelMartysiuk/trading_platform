@@ -1,9 +1,12 @@
 FROM python:3.8
 ENV PYTHONUNBUFFERED 1
 WORKDIR /app
-COPY ./requirements.txt /app/requirements.txt
 
-RUN pip install -r /app/requirements.txt
+COPY ./Pipfile /app/Pipfile
+COPY ./Pipfile.lock /app/Pipfile.lock
+
+RUN pip install pipenv
+RUN pipenv install --system --deploy --ignore-pipfile
 
 COPY ./entrypoint.sh /app/
 

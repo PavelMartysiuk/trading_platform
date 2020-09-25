@@ -1,6 +1,8 @@
-from .models import User, WatchList, Item, Inventory, Currency, Offer, Trade
+from users.models import User, WatchList, Item, Inventory, Currency, Offer, Trade
 
 from rest_framework import serializers
+
+from django.contrib.auth.hashers import make_password
 
 
 class WatchListSerializer(serializers.ModelSerializer):
@@ -31,6 +33,19 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name',
                   'date_joined', 'password', 'username', 'balance', 'watch_list')
         extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        watch_list = validated_data.get('watch_list', None)
+        password_in_sha1 = make_password(validated_data['password'])
+        validated_data['password'] = password_in_sha1
+        if watch_list:
+            validated_data.pop('watch_list')
+            user = User.objects.create(**validated_data)
+            WatchList.objects.create(user=user, **watch_list)
+            return user
+        else:
+            user = User.objects.create(**validated_data)
+            return user
 
 
 class CurrencySerializer(serializers.ModelSerializer):

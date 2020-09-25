@@ -4,11 +4,13 @@ services:
   db:
     image: postgres
     env_file:
-      - database.env
+      - .env
     ports:
       - "5433:5432"
   web:
     build: .
+    env_file:
+      - .env
     volumes:
       - .:/app
     ports:
@@ -17,6 +19,8 @@ services:
       - db
   redis:
     image: redis:alpine
+    volumes:
+    - ./redis-data:/app
   celery:
     build: .
     command: celery -A trading_platform worker -B -l INFO
@@ -25,3 +29,4 @@ services:
     depends_on:
       - web
       - redis
+      - db

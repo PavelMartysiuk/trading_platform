@@ -1,4 +1,4 @@
-from .models import User, WatchList, Item, Inventory, Currency, Offer, Trade
+from users.models import User, WatchList, Item, Inventory, Currency, Offer, Trade
 
 from django.contrib import admin
 

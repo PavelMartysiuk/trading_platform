@@ -12,7 +12,6 @@ from rest_framework.response import Response
 from rest_framework import mixins
 from rest_framework import viewsets
 
-from django.contrib.auth.hashers import make_password
 from django.http import Http404
 from django.shortcuts import get_list_or_404, get_object_or_404
 
@@ -29,9 +28,6 @@ class CreateUserGenericViewSet(mixins.RetrieveModelMixin,
     def create(self, request):
         """Func creates new user in db"""
         self.get_permission(self.create.__name__)
-        user_password = request.data['password']
-        user_password_in_sha1 = make_password(user_password)
-        request.data['password'] = user_password_in_sha1
         return super().create(request)
 
     def get_permission(self, func_name):

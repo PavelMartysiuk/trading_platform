@@ -1,6 +1,7 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
 from users.enums import OrderType
+
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class User(AbstractUser):
@@ -67,20 +68,28 @@ class Inventory(models.Model):
 
 class Trade(models.Model):
     item = models.ForeignKey(Item, null=True, on_delete=models.SET_NULL)
-    seller = models.ForeignKey(User, null=True, on_delete=models.SET_NULL,
+    seller = models.ForeignKey(User,
+                               null=True,
+                               on_delete=models.SET_NULL,
                                related_name='seller_trade',
                                related_query_name='seller_trade')
-    buyer = models.ForeignKey(User, null=True, on_delete=models.SET_NULL,
+    buyer = models.ForeignKey(User,
+                              null=True,
+                              on_delete=models.SET_NULL,
                               related_name='buyer_trade',
                               related_query_name='buyer_trade')
     quantity = models.IntegerField()
     unit_price = models.DecimalField(max_digits=7, decimal_places=2)
     description = models.TextField(blank=True, null=True)
-    buyer_offer = models.ForeignKey(Offer, null=True, on_delete=models.SET_NULL,
+    buyer_offer = models.ForeignKey(Offer,
+                                    null=True,
+                                    on_delete=models.SET_NULL,
                                     related_name='buyer_trade',
                                     related_query_name='buyer_trade'
                                     )
-    seller_offer = models.ForeignKey(Offer, null=True, on_delete=models.SET_NULL,
+    seller_offer = models.ForeignKey(Offer,
+                                     null=True,
+                                     on_delete=models.SET_NULL,
                                      related_name='seller_trade',
                                      related_query_name='seller_trade'
                                      )

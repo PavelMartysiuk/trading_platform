@@ -1,4 +1,5 @@
 import os
+
 import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -72,11 +73,11 @@ CELERY_TASK_SERIALIZER = 'json'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # trading_platform # postgres
-        'USER': 'postgres',  # 'racoon',  # 'postgres'
-        'PASSWORD': 'postgres',  # 'pass123',  # 'postgres',
-        'HOST': 'db',
-        'PORT': '5432',  # 5433
+        'NAME': os.environ.get('POSTGRES_DB'),  # trading_platform # postgres
+        'USER': os.environ.get('POSTGRES_USER'),  # 'racoon',  # 'postgres'
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),  # os.environ.get('POSTGRES_PASSWORD'),  # 'pass123',  # 'postgres',
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),  # 5433
     }
 }
 
