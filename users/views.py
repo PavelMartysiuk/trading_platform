@@ -16,11 +16,27 @@ from django.http import Http404
 from django.shortcuts import get_list_or_404, get_object_or_404
 
 
-class CreateUserGenericViewSet(mixins.RetrieveModelMixin,
-                               mixins.DestroyModelMixin,
-                               mixins.CreateModelMixin,
-                               mixins.UpdateModelMixin,
-                               viewsets.GenericViewSet):
+def validate_sell_offer(offer):
+    user_id = offer['user']
+    entry_quantity_sell_item = offer['entry_quantity']
+    try:
+        sell_item = Inventory.objects.get(user=user_id)
+    except Inventory.DoesNotExist:
+        raise Http404("You don't have this item")
+
+    quantity_sell_item = sell_item.quantity
+    if entry_quantity_sell_item > quantity_sell_item:
+        return False
+    return True
+
+
+class CreateUserGenericViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (AllowAny,)
@@ -53,10 +69,11 @@ class CreateUserGenericViewSet(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveDeleteInventoryGenericViewSet(mixins.RetrieveModelMixin,
-                                            mixins.DestroyModelMixin,
-                                            viewsets.GenericViewSet,
-                                            mixins.ListModelMixin, ):
+class RetrieveDeleteInventoryGenericViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin, ):
     permission_classes = (IsAuthenticated,)
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
@@ -77,32 +94,20 @@ class RetrieveDeleteInventoryGenericViewSet(mixins.RetrieveModelMixin,
         return super().destroy(request, *args, **kwargs)
 
 
-class RetrieveCurrencyGenericViewSet(mixins.RetrieveModelMixin,
-                                     viewsets.GenericViewSet,
-                                     mixins.ListModelMixin,
-                                     ):
-    """Class retrieves curensies and one currency by pk"""
+class RetrieveCurrencyGenericViewSet(
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+):
+    """Class retrieves currensies and one currency by pk"""
     permission_classes = (AllowAny,)
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
 
 
-def validate_sell_offer(offer):
-    user_id = offer['user']
-    entry_quantity_sell_item = offer['entry_quantity']
-    try:
-        sell_item = Inventory.objects.get(user=user_id)
-    except Inventory.DoesNotExist:
-        raise Http404("You don't have this item")
-
-    quantity_sell_item = sell_item.quantity
-    if entry_quantity_sell_item > quantity_sell_item:
-        return False
-    return True
-
-
-class CreateOfferGenericViewSet(mixins.CreateModelMixin,
-                                viewsets.GenericViewSet):
+class CreateOfferGenericViewSet(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = OfferSerializer
     queryset = Offer.objects.all()
@@ -124,9 +129,10 @@ class CreateOfferGenericViewSet(mixins.CreateModelMixin,
             return super().create(request)
 
 
-class RetrieveTradeGenericViewSet(mixins.RetrieveModelMixin,
-                                  viewsets.GenericViewSet,
-                                  mixins.ListModelMixin, ):
+class RetrieveTradeGenericViewSet(
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin, ):
     """Class retrieves all trade history and one trade by pk"""
     queryset = Trade.objects.all()
     serializer_class = TradeSerializer

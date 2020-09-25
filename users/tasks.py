@@ -34,13 +34,26 @@ class EditDB:
         seller_offer.save()
 
     @staticmethod
-    def write_trade_history(buyer_offer, seller_offer, buyer_id,
-                            seller_id, item, quantity, price, ):
+    def write_trade_history(
+            buyer_offer,
+            seller_offer,
+            buyer_id,
+            seller_id,
+            item,
+            quantity,
+            price,
+    ):
         buyer = User.objects.get(id=buyer_id)
         seller = User.objects.get(id=seller_id)
-        trade = Trade(buyer_offer=buyer_offer, seller_offer=seller_offer,
-                      seller=seller, buyer=buyer, item=item, quantity=quantity,
-                      unit_price=price, )
+        trade = Trade(
+            buyer_offer=buyer_offer,
+            seller_offer=seller_offer,
+            seller=seller,
+            buyer=buyer,
+            item=item,
+            quantity=quantity,
+            unit_price=price,
+        )
         trade.save()
 
     @staticmethod
@@ -56,18 +69,31 @@ def trade(buyer_offer, seller_offer, item, item_price):
     sell_quantity = seller_offer.quantity
     seller_id = seller_offer.user.id
     buyer_id = buyer_offer.user.id
-    seller = User.objects.get(id=seller_id)
-    buyer = User.objects.get(id=buyer_id)
-    buyer_item_in_inventory = Inventory.objects.get(user=buyer_id, item=item)
-    seller_item_in_inventory = Inventory.objects.get(user=seller_id, item=item)
+    try:
+        seller = User.objects.get(id=seller_id)
+        buyer = User.objects.get(id=buyer_id)
+        buyer_item_in_inventory = Inventory.objects.get(user=buyer_id, item=item)
+        seller_item_in_inventory = Inventory.objects.get(user=seller_id, item=item)
+    except User.DoesNotExist:
+        raise Exception('User obj not found')
+    except Inventory.DoesNotExist:
+        raise Exception('Item not found in inventory')
+
 
     if buy_quantity >= sell_quantity:
         total_price = item_price * sell_quantity
         edit_db.edit_item_quantity_in_offer(buyer_offer, seller_offer, sell_quantity)
         edit_db.edit_balance(buyer, seller, total_price)
         edit_db.edit_inventory(buyer_item_in_inventory, seller_item_in_inventory, sell_quantity)
-        edit_db.write_trade_history(buyer_offer, seller_offer, buyer_id, seller_id,
-                            item, sell_quantity, item_price)
+        edit_db.write_trade_history(
+            buyer_offer,
+            seller_offer,
+            buyer_id,
+            seller_id,
+            item,
+            sell_quantity,
+            item_price
+        )
         if buy_quantity == sell_quantity:
             edit_db.change_offer_status(seller_offer)
             edit_db.change_offer_status(buyer_offer)
@@ -79,7 +105,13 @@ def trade(buyer_offer, seller_offer, item, item_price):
         edit_db.edit_balance(buyer, seller, total_price)
         edit_db.edit_inventory(buyer_item_in_inventory, seller_item_in_inventory, buy_quantity)
         edit_db.write_trade_history(
-            buyer_offer, seller_offer, buyer_id, seller_id, item, buy_quantity, item_price
+            buyer_offer,
+            seller_offer,
+            buyer_id,
+            seller_id,
+            item,
+            buy_quantity,
+            item_price
         )
         edit_db.change_offer_status(buyer_offer)
 

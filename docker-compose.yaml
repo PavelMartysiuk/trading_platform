@@ -23,6 +23,8 @@ services:
     - ./redis-data:/app
   celery:
     build: .
+    env_file:
+      - .env
     command: celery -A trading_platform worker -B -l INFO
     volumes:
       - .:/app

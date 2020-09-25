@@ -8,13 +8,13 @@ from django.contrib.auth.hashers import make_password
 class WatchListSerializer(serializers.ModelSerializer):
     class Meta:
         model = WatchList
-        fields = ['id', 'user']
+        fields = ('id', 'user')
 
 
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
-        fields = ['id', 'item', 'quantity']
+        fields = ('id', 'item', 'quantity')
 
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -30,8 +30,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name',
-                  'date_joined', 'password', 'username', 'balance', 'watch_list')
+        fields = (
+            'id',
+            'email',
+            'first_name',
+            'last_name',
+            'date_joined',
+            'password',
+            'username',
+            'balance',
+            'watch_list'
+        )
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -43,9 +52,8 @@ class UserSerializer(serializers.ModelSerializer):
             user = User.objects.create(**validated_data)
             WatchList.objects.create(user=user, **watch_list)
             return user
-        else:
-            user = User.objects.create(**validated_data)
-            return user
+        user = User.objects.create(**validated_data)
+        return user
 
 
 class CurrencySerializer(serializers.ModelSerializer):
